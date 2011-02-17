@@ -1,0 +1,72 @@
+This tool allows you to flash firmware into a Linksys WAG160Nv2 after it
+was put into download mode, e.g. if the original firmware was destroyed.
+It runs under Linux only, you must be root to execute it.
+
+1. Compile
+==========
+
+gcc -o sercomm sercomm.c
+
+
+2. Enter Download Mode
+======================
+
+- power off the device
+- press the reset button
+- power on while holding the reset button
+- wait until the power LED flashes red/green, release the reset button
+
+
+3. Run the Tool
+===============
+
+Connect a LAN port to a NIC of the host, e.g. to eth1.
+
+3.1. Probe the Device
+---------------------
+
+./sercomm eth1
+
+This should list some info about all device found in download mode.
+
+
+3.2. Flash
+----------
+
+./sercomm eth1 firmware_file
+
+This probes for devices in download mode. If more than one found, it
+prompts for the one to flash. Afterwards the firmware file is checked
+(matching hardware id etc.) and flashed. A reboot is executed afterwards.
+
+
+4. Troubleshooting
+==================
+
+If anything goes wrong with probing or flashing, please execute the command
+again with "-v", e.g.
+      ./sercomm -v eth1 firmware_file
+This adds a lot of debug output to stdout.
+
+
+5. Status
+=========
+
+Currently tested with one WAG160Nv2 (annex B) only, I don't own more.
+I've successfully flashed the vendor firmware 2.00.20 (see link below).
+OpenWRT firmware binaries still miss some fields
+(work in progress, please wait).
+
+6. Contact
+==========
+
+You may contact me via email: <jal2 at gmx.de> 
+Please don't ask for ports to other OS or to other devices.
+
+7. Links
+========
+
+vendor firmware:
+
+http://downloads.linksysbycisco.com/downloads/firmware/1224645224484/WAG160Nv2-EU-ANNEXA-ETSI-2.00.20-code.zip
+http://downloads.linksysbycisco.com/downloads/firmware/WAG160Nv2-EU-ANNEXB-ETSI-2.00.20-code.zip
