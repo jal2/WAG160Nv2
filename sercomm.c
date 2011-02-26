@@ -472,7 +472,7 @@ int ReadHWInfoResp(int s)
 int UpdateFW(int s, const char *fw_name, struct hw_info_s *hw)
 {
   int fd = -1;
-  unsigned char *mm = MAP_FAILED;
+  unsigned char *mm;
   unsigned char *fw = NULL;
   unsigned char *cptr;
   unsigned char *sec_pid;
@@ -519,19 +519,21 @@ int UpdateFW(int s, const char *fw_name, struct hw_info_s *hw)
 
   if (!(fw=malloc(st.st_size))) {
     err("failed to malloc %lx byte", st.st_size);
+    munmap(mm, MAX_FW_SIZE);
     goto end;
   }
 
   memcpy(fw,mm,st.st_size);
   munmap(mm, MAX_FW_SIZE);
-  mm=NULL;
 
+#if 0 /* openwrt images currently contain no real cfe, only zeros */
   /* check that the firmware starts with the boot loader */
   if (memcmp(fw+CFE_MAGIC_OFFSET, "CFE1CFE1", 8)) {
     err("invalid firmware file %s - no CFE1CFE1 at offset 0x%x. "
 	"Bootloader missing?", fw_name, CFE_MAGIC_OFFSET);
     goto end;
   }
+#endif
 
   /* check that we have a pid area at offset 0xff80 */
   memcpy(&pid, fw+PID_OFFSET, sizeof(pid));
@@ -646,8 +648,6 @@ int UpdateFW(int s, const char *fw_name, struct hw_info_s *hw)
   }
 
  end:
-  if (mm != MAP_FAILED)
-    munmap(mm, MAX_FW_SIZE);
   if (fw)
     free(fw);
   if (fd >= 0)
