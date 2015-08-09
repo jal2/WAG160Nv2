@@ -183,7 +183,7 @@ void print_pkt(const char *str1, const char *str2, unsigned char *buf,
 #undef MAC_ADDR
 
   if (len > sizeof(hdr)) {
-    printf("#DBG  payload 0x%x:", len - sizeof(hdr));
+    printf("#DBG  payload 0x%lx:", len - sizeof(hdr));
     hexdump(buf+sizeof(hdr), MIN(len-sizeof(hdr), 16));
     printf("\n");
   }
@@ -571,7 +571,7 @@ int UpdateFW(int s, const char *fw_name, struct hw_info_s *hw)
   if (cptr >= (fw + st.st_size-PID_MAGIC_LEN)) {
     dbg("no pid2 found");
     if (sec_pid != NULL) {
-      printf("#INFO converting pid area at offset 0x%x into a pid2\n",
+      printf("#INFO converting pid area at offset 0x%lx into a pid2\n",
 	     sec_pid-fw);
       memcpy(sec_pid, PID2_MAGIC, PID_MAGIC_LEN);
       memcpy(sec_pid+offsetof(struct pid_s,magic2),
